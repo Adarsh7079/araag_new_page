@@ -35,8 +35,17 @@ export default async function handler(req, res) {
   });
 
   if (!response.ok) {
-    console.error("Resend request failed:", await response.text());
-    return res.status(502).send("Unable to send your message right now.");
+    const errorDetails = await response.text();
+    console.error("Resend request failed:", response.status, errorDetails);
+
+    let errorMessage = "Unable to send your message right now.";
+    try {
+      const resendError = JSON.parse(errorDetails);
+      if (resendError.message) errorMessage = resendError.message;
+    } catch {
+    }
+
+    return res.status(502).send(errorMessage);
   }
 
   return res.status(200).send("OK");
