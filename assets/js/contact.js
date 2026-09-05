@@ -14,13 +14,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sentMessage) sentMessage.classList.remove("d-block");
 
     const formData = new FormData(form);
-    const action = form.getAttribute("action") || "forms/contact.php";
+    const action = form.getAttribute("action") || "/api/contact";
 
     try {
       const response = await fetch(action, {
         method: "POST",
-        body: formData,
-        headers: { "X-Requested-With": "XMLHttpRequest" },
+        body: JSON.stringify(Object.fromEntries(formData.entries())),
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
       });
 
       const text = await response.text();
